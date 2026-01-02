@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class EtudiantImportController extends Controller
 {
-    /**
-     * Import des étudiants depuis un fichier Excel/CSV
-     */
+    
     public function import(Request $request)
     {
         $request->validate([
@@ -36,6 +34,39 @@ class EtudiantImportController extends Controller
                 'error' => $e->getMessage(),
             ]);
 
+            return response()->json([
+                'success' => false,
+                'message' => 'Import failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }*/
+
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Imports\EtudiantsImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Exception;
+
+class EtudiantImportController extends Controller
+{
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls|max:10240'
+        ]);
+
+        try {
+            Excel::import(new EtudiantsImport, $request->file('file'));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Students imported successfully'
+            ], 200);
+
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Import failed',

@@ -11,6 +11,7 @@ class EnseignantController extends Controller
     // Lister tous les enseignants
     public function index()
     {
+        
         return response()->json(
             Enseignant::select(
                 'id',
